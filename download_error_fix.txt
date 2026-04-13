@@ -1,0 +1,134 @@
+*******************************************************************************
+         MINDGUARD 🛡️ — PDF DOWNLOAD ERROR FIX GUIDE
+*******************************************************************************
+
+ERROR:   ModuleNotFoundError: No module named 'reportlab'
+OCCURS:  When clicking "Download Report" in any analysis page
+URL:     /download-report/<id>  or  /download-wellness-report
+
+-------------------------------------------------------------------------------
+WHAT CAUSED THIS ERROR?
+-------------------------------------------------------------------------------
+The 'reportlab' library is required by MindGuard to generate PDF reports.
+It is listed in the project's dependency file (pyproject.toml), but it was
+NOT installed on your system — either because:
+
+  1. The virtual environment was NOT activated before running 'pip install'
+  2. You ran 'pip install' but skipped the project dependencies step
+  3. The installation was interrupted before 'reportlab' was downloaded
+  4. You are using a different Python installation than the virtual environment
+
+-------------------------------------------------------------------------------
+HOW TO FIX IT — STEP BY STEP
+-------------------------------------------------------------------------------
+
+STEP 1: Open your terminal / PowerShell in the project folder
+-----------------------------------------------------------------
+  cd "C:\Users\Mayur Khaire\Downloads\82D"
+
+  (Replace the path with wherever you saved the project)
+
+STEP 2: Activate the virtual environment
+-----------------------------------------------------------------
+  WINDOWS (PowerShell):
+    .\.venv\Scripts\Activate.ps1
+
+  WINDOWS (Command Prompt):
+    .\.venv\Scripts\activate.bat
+
+  macOS / Linux:
+    source .venv/bin/activate
+
+  ✅ You should see (.venv) appear at the start of your terminal prompt.
+  ❌ If activation fails, see the NOTE at the bottom of this file.
+
+STEP 3: Install the missing library directly
+-----------------------------------------------------------------
+  Run this command:
+
+    pip install reportlab
+
+  Wait for it to complete. You should see output like:
+    Successfully installed reportlab-4.x.x
+
+STEP 4: Also install the full project dependencies (recommended)
+-----------------------------------------------------------------
+  This ensures ALL required libraries are installed, not just reportlab:
+
+    pip install -e .
+
+  OR if that doesn't work:
+
+    pip install flask flask-sqlalchemy reportlab weasyprint gunicorn \
+                nltk numpy scikit-learn matplotlib seaborn werkzeug \
+                email-validator psycopg2-binary
+
+STEP 5: Restart the application
+-----------------------------------------------------------------
+  Stop the currently running server (press CTRL+C in the terminal running it).
+
+  Then start it again:
+
+  WINDOWS:
+    python main.py
+
+  macOS / Linux:
+    python3 main.py
+
+STEP 6: Try the Download button again
+-----------------------------------------------------------------
+  Open your browser and go to:
+    http://127.0.0.1:5000
+
+  Run an analysis, then click "Download Report" — the PDF should now work.
+
+-------------------------------------------------------------------------------
+QUICK ONE-LINE FIX (if you just want the fastest solution)
+-------------------------------------------------------------------------------
+With the virtual environment ACTIVE, run:
+
+    pip install reportlab weasyprint
+
+Then restart:  python main.py
+
+-------------------------------------------------------------------------------
+VERIFY INSTALLATION (optional check)
+-------------------------------------------------------------------------------
+To confirm reportlab is installed correctly, run:
+
+    python -c "import reportlab; print('reportlab OK, version:', reportlab.Version)"
+
+Expected output:
+    reportlab OK, version: 4.x.x
+
+If you see an error here, the library still is not installed in the correct
+environment. Make sure (.venv) is shown in your terminal prompt first.
+
+-------------------------------------------------------------------------------
+⚠️  COMMON MISTAKES
+-------------------------------------------------------------------------------
+
+MISTAKE 1: Running pip without activating the virtual environment
+  - 'pip install reportlab' without (.venv) installs to your SYSTEM Python,
+    not the project. The application uses the .venv folder, so it won't see it.
+  - FIX: Always activate .venv BEFORE running pip.
+
+MISTAKE 2: Using python instead of the venv python
+  - If you run 'python main.py' without activating .venv, it uses system Python.
+  - FIX: Activate .venv first, OR use: .\.venv\Scripts\python.exe main.py
+
+MISTAKE 3: PowerShell execution policy blocking activation
+  - If you see "cannot be loaded because running scripts is disabled"
+  - FIX: Run this ONCE in PowerShell as Administrator:
+      Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+    Then activate again.
+
+-------------------------------------------------------------------------------
+📞  CONTACT / SUPPORT
+-------------------------------------------------------------------------------
+If the issue persists after following all steps, share the full error text
+(the red "Traceback" page) with the developer for further diagnosis.
+
+*******************************************************************************
+                          END OF FIX GUIDE
+*******************************************************************************

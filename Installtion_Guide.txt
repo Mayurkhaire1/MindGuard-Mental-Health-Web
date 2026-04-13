@@ -1,0 +1,151 @@
+*******************************************************************************
+                     MINDGUARD 🛡️ - INSTALLATION & SETUP GUIDE
+*******************************************************************************
+
+Follow these steps to set up the MindGuard Mental Health Support System on a 
+new device. This guide covers both Windows and macOS.
+
+-------------------------------------------------------------------------------
+1. PREREQUISITES
+-------------------------------------------------------------------------------
+- Python 3.11 or higher (Must be installed on the system)
+- Terminal Access (PowerShell on Windows, Terminal on macOS/Linux)
+- Internet Connection (For initial library installation)
+
+-------------------------------------------------------------------------------
+2. STEP-BY-STEP SETUP (WINDOWS)
+-------------------------------------------------------------------------------
+1.  Navigate into the project folder:
+    cd "C:\Path\To\82D"
+
+2.  Create a Virtual Environment:
+    python -m venv .venv
+
+3.  Activate the Virtual Environment:
+    .\.venv\Scripts\Activate.ps1
+    
+    *NOTE:* If you see a red error about execution policy, run:
+    Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+    Then run the activation command again.
+
+4.  Install the Project Dependencies:
+    python -m pip install --upgrade pip
+    pip install .
+
+5.  Set Database & Session Configuration:
+    $env:SESSION_SECRET="mental-health-dev-secret-001"
+    $env:DATABASE_URL="sqlite:///mindguard.db"
+
+6.  Initialize NLTK Data (Mandatory for NLP logic):
+    python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords'); nltk.download('wordnet')"
+
+7.  Run the Application:
+    python main.py
+
+8.  Access in Browser:
+    Open Chrome or Edge and go to: http://127.0.0.1:5000
+
+-------------------------------------------------------------------------------
+3. STEP-BY-STEP SETUP (macOS)
+-------------------------------------------------------------------------------
+1.  Open Terminal and go to the project directory:
+    cd "/Path/To/82D"
+
+2.  Create a Virtual Environment:
+    python3 -m venv .venv
+
+3.  Activate the Virtual Environment:
+    source .venv/bin/activate
+
+4.  Install the Project Dependencies:
+    python3 -m pip install --upgrade pip
+    pip install .
+
+5.  Set Database & Session Configuration:
+    export SESSION_SECRET="mental-health-dev-secret-001"
+    export DATABASE_URL="sqlite:///mindguard.db"
+
+6.  Initialize NLTK Data:
+    python3 -c "import nltk; nltk.download('punkt'); nltk.download('stopwords'); nltk.download('wordnet')"
+
+7.  Run the Application:
+    python3 main.py
+
+8.  Access in Browser:
+    Open Safari or Chrome and go to: http://127.0.0.1:5000
+
+-------------------------------------------------------------------------------
+4. TROUBLESHOOTING & COMMON ERRORS
+-------------------------------------------------------------------------------
+- ERR_CONNECTION_REFUSED: Ensure the python main.py command is still running.
+- PDF Download Fails: Ensure the 'instance/' folder exists and is writable.
+- Invisible Text: Ensure your browser is not forcing a High Contrast mode that 
+  conflicts with the app's Dark/Light theme system.
+- Microphone/Camera blocked: Browse to http://localhost:5000 or http://127.0.0.1:5000 
+  specifically, as browsers block camera/mic on non-secure http IP addresses.
+
+-------------------------------------------------------------------------------
+5. CONTACT & SUPPORT
+-------------------------------------------------------------------------------
+System designed for professional mental health screening. 
+Contact authorized developer for codebase maintenance or scaling inquiries.
+
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+6. RESOLVING DARK MODE VISIBILITY ISSUES
+-------------------------------------------------------------------------------
+SYMPTOM:
+  Some text labels (emotion names, icons, table cells, card numbers) are
+  invisible or appear as dark-on-dark in the browser's Dark Mode.
+
+ROOT CAUSE:
+  CSS wildcard selectors (e.g. `.card *`, `.modal-body *`, `.card span`)
+  inside a dark-mode @media block override ALL child element colors — 
+  including FontAwesome icon colors and Bootstrap utility colors like 
+  text-warning, text-success, text-danger, etc.
+
+SOLUTION — FILE: static/css/style.css
+---------------------------------------
+DO NOT use wildcard (*) selectors inside @media (prefers-color-scheme: dark).
+
+WRONG (causes new breakage):
+    @media (prefers-color-scheme: dark) {
+        .card *, .modal-body * { color: #f1f5f9 !important; }
+    }
+
+CORRECT (surgical, non-breaking overrides):
+    @media (prefers-color-scheme: dark) {
+
+        /* Fix emotion labels specifically */
+        .emotion-breakdown > div > span:first-child {
+            color: #f1f5f9 !important;
+        }
+
+        /* Fix table cell text */
+        .table td {
+            color: #cbd5e1 !important;
+        }
+
+        /* Fix modal content by ID — never by class wildcard */
+        #detailedAnalysisBody p,
+        #detailedAnalysisBody h6,
+        #detailedAnalysisBody .card-body p,
+        #detailedAnalysisBody .card-body span {
+            color: #f1f5f9 !important;
+        }
+
+        /* Preserve these — DO NOT override with wildcards: */
+        /* text-warning, text-success, text-danger, text-info  */
+        /* .fas icons inherit color from parent, so wildcards break them */
+    }
+
+ALSO REMOVE wildcards from existing blocks:
+    .text-muted, .text-muted *  →  change to  .text-muted (no *)
+    .text-secondary, .text-secondary *  →  change to  .text-secondary (no *)
+
+RULE OF THUMB:
+  Every time you fix a visibility issue in dark mode, check that you are
+  targeting only the specific element, not its children via *.
+  Use browser DevTools (F12 > Inspect) to find the exact failing element.
+
+*******************************************************************************
